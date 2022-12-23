@@ -1,0 +1,99 @@
+## Load the package
+library(hzar);
+
+#input trait data
+qscores = read.csv("100_all_qscores_hzar.csv", header=TRUE)
+
+#input site data
+site = read.csv("100_all_localities_hzar.csv", header=TRUE)
+
+## A typical chain length
+chainLength=1e5;                       
+
+## Make each model run off a separate seed
+mainSeed=
+  list(
+       A=c(978,544,99,596,528,124),
+
+if(require(doMC)){
+  ## If you have doMC, use foreach in parallel mode
+  ## to speed up computation.
+  registerDoMC()
+} else {
+  ## Use foreach in sequential mode
+  registerDoSEQ();
+}
+
+
+## Blank out space in memory to hold morphological analysis
+if(length(apropos("^Jt$",ignore.case=FALSE)) == 0 ||
+   !is.list(Jt) ) Jt <- list()
+## We are doing just the one quantitative trait, but it is
+## good to stay organized.
+mimulus_Qscore <- list();
+## Space to hold the observed data
+mimulus_Qscore$obs <- list();
+## Space to hold the models to fit
+mimulus_Qscore$models <- list();
+## Space to hold the compiled fit requests
+mimulus_Qscore$fitRs <- list();
+## Space to hold the output data chains
+mimulus_Qscore$runs <- list();
+## Space to hold the analysed data
+mimulus_Qscore$analysis <- list();
+
+
+## Trait: chr4_137
+mim_Q_scores2 <-
+  hzar.doNormalData1DRaw(hzar.mapSiteDist(site$location,
+                                          site$distance),
+                        qscores$locality,
+                         qscores$Chr4_Window137.2.Q)
+
+## Look at a graph of the observed data
+hzar.plot.obsData(mim_Q_scores2);
+
+#I changed these three models to match the ones I ran for the SNPs
+
+Jt.loadQscoremodel("free","none","modelI");
+
+## Modify all models to focus on the region where the observed
+## data were collected.
+## Observations were between -7051 and 5933 km.
+mimulus_Qscore$models <- sapply(mimulus_Qscore$models,
+                          hzar.model.addBoxReq,
+                          -7100 , 6000,
+                          simplify=FALSE)
+
+
+## Compile each of the models to prepare for fitting
+## Note that we are using hzar.first.fitRequest.gC for fitting
+## guassian (aka "normal") clines.
+mimulus_Qscore$fitRs$init <- sapply(mimulus_Qscore$models,
+                         hzar.first.fitRequest.gC,
+                         obsData=mimulus_Qscore$obs,
+                         verbose=FALSE,
+                         simplify=FALSE)
+## Update the settings for the fitter if desired.
+mimulus_Qscore$fitRs$init$modelI$mcmcParam$chainLength <-
+  chainLength;                          #1e5
+mimulus_Qscore$fitRs$init$modelI$mcmcParam$burnin <-
+  chainLength %/% 10;                   #1e4
+mimulus_Qscore$fitRs$init$modelI$mcmcParam$seed[[1]] <-
+  mainSeed$A
+
+## Check fit request settings
+print(mimulus_Qscore$fitRs$init)
+
+
+## Run just one of the models for an initial chain
+mimulus_Qscore$runs$init <- list()
+mimulus_Qscore$runs$init$modelI <-
+  hzar.doFit(mimulus_Qscore$fitRs$init$modelI)
+
+## print params
+print(hzar.get.ML.cline(mimulus_Qscore$runs$init$modelI))
+
+hzar.plot.fzCline(mimulus_Qscore$runs$init$modelI)
+
+hzar.plot.cline(mimulus_Qscore$runs$init$modelI)

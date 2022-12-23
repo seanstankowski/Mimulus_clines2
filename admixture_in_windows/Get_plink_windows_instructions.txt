@@ -1,0 +1,20 @@
+## 1. get windows
+
+./get_plink_windows.py plink_map_bp_sorted.map --win_size 100 > 100_win_bp.txt
+
+
+## 2. make bed files
+
+./plink_bed_windows.py batch_1.plink_sorted -w 100_win_corrected.txt -o 100_full_corrected
+
+
+## 3. run admixture
+
+./admix_wins.py 100_chr4 -k 2
+
+
+## 4. combine Q
+
+./combine_Q.py directory > out.txt
+
+
