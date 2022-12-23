@@ -1,0 +1,260 @@
+######################################################################################
+start.time <- Sys.time()
+#ABOUT THIS SCRIPT:
+#Language: R
+#associated publication: 
+#Author: Sean Stankowski
+#contact: sean.stankowski@gmail.com
+
+## WHAT DOES IT DO??
+#This script tests for significant overlap among a set of QTL previously inferred by QTL mapping.
+#It could be used to test for significant overlap between any set of genomic features that have 
+#minimum and maximum bounds, but will may be slow if the number as the number of objects increases.
+#	The script first counts the number of overlap between n QTL distributed across n chromosomes.
+#This step is done using the GenomicRanges package, starting with a 5 column dataframe (see below).
+#The number of overlaps is then expressed as the average number of overlaps per QTL. If the returned
+#value is 3, then this means that, on average, each QTL overlaps with 3 others,
+#	The script then answers the question, does the number of overlaps, differ from what is expected 
+#by chance? This is done by generating permuted datasets by generating new, random genomic coordinates 
+#for each QTL, while keeping their observed size. The probability of a qtl falling on each chromosome
+#is not completely random, but is instead a function of is size (i.e., p(chromi) = length_chromi)/
+#sum(length_chromi...j)), so that longer chromosomes are more likely to have a QTL assigned to them.
+#	The average number of overlaps per QTL is calculated for each permutation. The p-value is 
+#calculated as normal for a permutation test, as (n_permuted > n_observed +1)/(n_perms+1). 9999 perms
+#was sufficient to estimate a stable p-value for my dataset, and took 6.617476 mins with 27 QTL on a
+#macbook pro. 
+#	The script produces a histogram of the permuted values of the overlap statistic, with a red
+#vertical line that marks the value of the observed value. The upper number on the plot is the p-value
+#the one below it is the observed average number of QTL overlaps. 
+
+######################################################################################
+## load required packages
+	library(GenomicRanges)
+	library(dplyr)
+## set working directory	
+	setwd("/Users/sstankow/Documents/Projects/Mimulus/NEW_CLINE_FIGS")
+######################################################################################
+
+## THE FOLLOING THINGS NEED TO BE PROVIDED/SPECIFIED FOR THIS SCRIPT TO WORK CORRECTLY
+		### 1| SPECIFY THE NUMBER OF PERMUTATIONS FOR SIGNIFICANCE TESTING
+	 			n_perms = 9999 
+		### 2| DATAFRAME OF 5 COLUMNS - Chr, start, end, strand, score - with 1 row per QTL Make the strand positive for all qtl and the score is not used so just make this 1
+				qtl_data <- read.csv("qtl_positions.csv", header=TRUE) 
+		### 3| PROVIDE A LIST OF THE QTL LENGTHS, WITH THE QTL IN THE SAME ORDER AS THE DATAFRAME
+				qtl1	<-	2833075
+				qtl2	<-	12779955
+				qtl3	<-	12749653
+				qtl4	<-	8628366
+				qtl5	<-	9328974
+				qtl6	<-	4552070
+				qtl7	<-	4459950
+				qtl8	<-	6726456
+				qtl9	<-	6590352
+				qtl10	<-	11012612
+				qtl11	<-	5779497
+				qtl12	<-	5900765
+				qtl13	<-	8057689
+				qtl14	<-	6120037
+				qtl15	<-	821230
+				qtl16	<-	7528402
+				qtl17	<-	6832343
+				qtl18	<-	12907346
+				qtl19	<-	7080718
+				qtl20	<-	10641674
+				qtl22	<-	7552271
+				qtl23	<-	318749
+				qtl24	<-	1179914
+				qtl25	<-	4822295
+				qtl26	<-	7089959
+				qtl27	<-	3703820
+		### 4| PROVIDE A VECTOR OF QTL LENGHTS
+			qtl_lengths <- c(qtl1,	qtl2,	qtl3,	qtl4,	qtl5,	qtl6,	qtl7,	qtl8,	qtl9,	qtl10,	qtl11,	qtl12,	qtl13,	qtl14,	qtl15,	qtl16,	qtl17,	qtl18,	qtl19,	qtl20,	qtl22,	qtl23,	qtl24,	qtl25,	qtl26,	qtl27)
+		### 5| PROVIDE A LIST OF CHROMOSOME LENGTHS
+			chr1 <- 20551962
+			chr2 <-24346717 
+			chr3 <-20798980 
+			chr4 <-18557065 
+			chr5 <-25557271 
+			chr6 <-15765609 
+			chr7 <-17530973 
+			chr8 <-20267433 
+			chr9 <-14510046 
+			chr10 <-17405948 
+###################################	END SETUP		
+
+### first calculate the observed number of qtl overlaps		
+	## make a GRanges object from our dataframe 
+	qtl_ranges <- makeGRangesFromDataFrame(qtl_data)
+		## find all overlaps
+		qtl_overlaps <- findOverlaps(qtl_ranges)
+			### count the number of overlaps	
+			n_overlaps <- length(queryHits(qtl_overlaps))
+				### find the average number of overlaps per qtl	
+				observed_average_overlaps_per_qtl <-  n_overlaps/length(qtl_data$Chr)
+				
+######### prepare  ################################################################################
+### find the total length of each chromosome
+		######### generate some chromosome IDs for each of our randomly placed QTL
+			### create a vector of chromosome lengths and find the total length
+			chr_lengths <- c(chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10)
+				 ### find the total lengths	
+				total_length <- sum(chr_lengths)
+
+		 ### calculate the proportion of the size of each LG by the total which we can use to condition the probability of observing a QTL on LGi
+			## empty vector to save out proportions
+			probs <- vector("numeric",length(chr_lengths))	
+			  ### use a loop to calculate length of each chr as a prop. of the total, which we can use to condition the probability of observing a QTL on LGi
+## T-cell transcript simulator
+
+############################# SETUP ###############################
+##### Experimental details	
+	n_cells <- 700000	## This is the total number of cells going into the experiment
+	alpha_count <-300000 ## The number of alpha transcripts recovered
+	beta_count <- 100000 ## The number of beta transcripts 
+	alpha_beta_pairs <- 10000 ## The number of cells where both alpha and beta transcripts are recovered  
+
+## permutation test parameters
+n_perms <- 100 ## Number of random 'simulations' to conducted for significance testing
+start.time <- Sys.time() ## this returns the time it takes for the script to run; nothing to edit here
+########################## END SETUP ##############################
+
+p_alpha <- alpha_count / n_cells
+
+
+
+######### permutation test start ################################################################################		
+  ### create a vector to catch all of the permuted data 
+	permuted_average_overlaps <- vector("numeric",length(n_perms))
+
+  ### now for the loop
+	for(j in 1:n_perms){
+		##### ok so now we have the probabilities, now need to sample n numbers and add save them to a vector
+			### create a vector with the number of each lg
+			lg_ID <- c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10")
+				## now we need to set the number of fake qtl that we want to assign chr ids to
+				n <- length(qtl_data$Chr)
+			
+				
+		##################### now we will calculate some things that we will need moving forward				
+			## now lets sample lg_ID n times with probabilities, prob
+					new_qtl_chr_ids <- sample(lg_ID, size=n, replace=TRUE, prob=probs)
+					
+					### we need a vector of chromosome lengths corresponding to each chr label 
+						## set up an empty vector
+						new_qtl_chr_lengths <- vector("numeric",length(n))	
+					for (i in seq_along(new_qtl_chr_ids)){
+					chri <- new_qtl_chr_ids[i]
+					if (chri=="chr1"){ temp_l <- (20551962)
+					} else if (chri=="chr2"){ temp_l <- (24346717)
+					 } else if (chri=="chr3"){ temp_l <- (20798980)
+					  } else if (chri=="chr4"){ temp_l <- (18557065)
+					   } else if (chri=="chr5"){ temp_l <- (25557271)
+					    } else if (chri=="chr6"){ temp_l <- (15765609)
+					     } else if (chri=="chr7"){ temp_l <- (17530973)
+					      } else if (chri=="chr8"){ temp_l <- (20267433)
+					       } else if (chri=="chr9"){ temp_l <- (14510046)
+					         } else if (chri=="chr10"){ temp_l <- (17405948)
+					          }
+					     new_qtl_chr_lengths[i] <- temp_l
+				     }
+					
+################################# What we now have
+	## an lg that each of our new qtl will fall on "new_qtl_chr_ids"
+	## and the chromosome length for each in a list that corresponds with the chr ids "new_qtl_chr_lengths"
+	## and a vector of chromosome lengths "qtl_lengths"
+	
+		### now let's combine all of these variables into a dataframe
+			##initialize a dataframe
+				df <- data.frame(matrix(NA, nrow = length(new_qtl_chr_lengths), ncol = 0))
+					df$chr_id <- new_qtl_chr_ids
+					df$chr_leng <- new_qtl_chr_lengths
+					df$qtl_length <- qtl_lengths
+
+### now we need to generate bounds for each qtl that are equal to the bounds of the observed qtl but with random positions]
+	### a general rule is that the start of each qtl can't extend past the ends of each lg, so qtl_start < chr_length - qtl_length + 1; none of our qtl are larger than any lg so we are good there. if this is the case, then this script may not work for those qtl
+	
+	 ##choose a random qtl start position
+	 	## setup and empty vector to catch the qtl start positions
+	 		new_qtl_starts <- vector("numeric",length(n))	
+	 			 	
+				for(i in 1:nrow(df)) {
+						temp_starts <- sample(0:((df[i,2]-df[1,3]+1)), 1)
+						new_qtl_starts[i] <- temp_starts
+						}	
+			## add this to our dataframe 
+				df$start <- new_qtl_starts
+	
+	## now compute the ends
+			## setup and empty vector to catch the qtl end positions
+	 		new_qtl_ends <- vector("numeric",length(n))	
+				for(i in 1:nrow(df)) {
+						temp_ends <- df[i,4]+df[i,3]
+						new_qtl_ends[i] <- temp_ends
+						}
+			## add this to our dataframe 
+				df$end <- new_qtl_ends
+	
+		# sanity check, uncomment this to and compare output to qtl lenght
+		#		lets do a check, qtl_end - qtl_start should equal the qtl sizes
+		#			for(i in 1:nrow(df)) {
+		#				size <- df[i,5]-df[i,4]
+		#					print(size)
+		#				}						
+		# whooooooooooo! it works	
+
+###### Now we have to get this dataframe into the correct input order -- 'chr', start, end, strand, score
+	
+	##get rid of the text from the chr_id
+			chr_id_temp <- df$chr_id
+				new_chr_ids <- vector("numeric",length(n))
+					for (i in seq_along(chr_id_temp)){
+						chr_id3 <- chr_id_temp[i]
+							stripped <- gsub("[a-zA-Z ]", "", chr_id3)
+							 	new_chr_ids[i] <- stripped
+					}
+		
+			## add it to our dataframe, replacing the old labels
+					df$chr_id <- new_chr_ids
+	
+				## ditch the chr_leng and qtl_length columns 
+					drops <- c("chr_leng","qtl_length")
+					df <- df[ , !(names(df) %in% drops)]
+
+					## now we just need to add string and score columns which can just steal from our real dataframe
+						strand <- qtl_data$strand
+						score <- qtl_data$score
+						
+						## add this to our dataframe 
+							df$strand <-strand
+							df$score <- score 
+								## rename the chr_id column
+								df <- df %>% rename(Chr = chr_id)
+
+#################### ok, so now we have a completely synthetic dataset of qtl positions!						
+							
+   ### Let's find some ranges	
+		qtl_ranges <- makeGRangesFromDataFrame(df)
+			## find all overlaps
+			qtl_overlaps <- findOverlaps(qtl_ranges)
+				### count the number of overlaps	
+				n_overlaps <- length(queryHits(qtl_overlaps))
+					### find the average number of overlaps per qtl	
+					permuted_average_overlaps_per_qtl <-  n_overlaps/length(df$Chr)
+					permuted_average_overlaps[j] <- permuted_average_overlaps_per_qtl 
+} 
+
+############# calculate p-values
+	permuted_average_overlaps_numeric <-  as.numeric(permuted_average_overlaps)
+		p_value <- ((sum(permuted_average_overlaps_numeric >  observed_average_overlaps_per_qtl | permuted_average_overlaps_numeric==observed_average_overlaps_per_qtl)+1)/(n_perms+1))
+			p_value
+
+## make a histogram of the permuted values and plot the observed value 			
+hist(permuted_average_overlaps_numeric,breaks=30, xlab="Average number of overlaps per QTL", main=p_value ,ylab="Count")
+abline(v = observed_average_overlaps_per_qtl, col="red",lty=2)
+mtext(observed_average_overlaps_per_qtl, side=3)
+
+########################################################################################### time to run #########
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
+################################################################################################# end ###########

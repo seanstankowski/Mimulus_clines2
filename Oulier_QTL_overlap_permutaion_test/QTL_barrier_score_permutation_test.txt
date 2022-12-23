@@ -1,0 +1,138 @@
+
+# ABOUT THIS SCRIPT
+# AUTHOR: Sean Stankowski
+# Email: seansankowski@gmail.com
+
+
+### Set working directory
+	setwd("/Users/seanstankowski18/Documents/Projects/mimulus/window_cline_paper_6april")
+	### read in the data
+		data <- read.csv("100_win_corrected_clines_april_5_2020_updated_pi_dxy.csv", header = TRUE)
+		### We don't need to drag all of the variables in this dataset through the analysis, so create a new that just contains the two columns that we need
+				qtl_data <- data[c(25:27,32)]
+################################
+#define the high b scores--######## UNCOMMENT THE CORRECT VARIABLE
+	#var <- qtl_data$b_greater_0.5
+	#var <- qtl_data$top_1_perc
+	var <- qtl_data$top_5_perc
+
+Choose the number of permutations
+n <- 99
+################################			
+## First get the observed numbers of b_wins that overlap with a QTL
+	### define each qtl and its lower and upper limits
+		## Anthocyanin abs.
+			qtl1 <- c(78270425,78589174)
+		## Carotenoid abs.
+			qtl2 <- c(42769249,43949163)
+			qtl3 <- c(77260202,82082497)
+			qtl4 <- c(102663532,109753491)
+			qtl5 <- c(125700141,129403961)
+		## Corolla length
+			qtl6 <- c(7746471,20526426)
+			qtl7 <- c(127069735,139819388)
+		## Corolla width
+			qtl8 <- c(151521062,160149428)
+		## tube width
+			qtl9 <- c(151028888,153861963)
+		## corolla height
+			qtl10 <- c(74918112,84247086)
+			qtl11 <- c(130382794,134934864)
+			qtl12 <- c(150022094,154482044)
+		## corolla extension
+			qtl13 <- c(109836448,116426800)
+			qtl14 <- c(143219171,154231783)
+			qtl15 <- c(188937247,194716744)
+		## Tallest anther length
+			qtl16 <- c(58057970,64890313)
+			qtl17 <- c(65741394,78648740)
+		## shortest anther length
+			qtl18 <- c(57809595,64890313)
+			qtl19 <- c(127069735,137711409)
+		## Stigma exertion
+			qtl20 <- c(136983083,143103120)
+			qtl21 <- c(151028888,151850118)
+			qtl22 <- c(178440412,185968814)
+		## Stigma anther distance
+			qtl23 <- c(125700141,139819388)
+			qtl24 <- c(178440412,185992683)
+		## calyx length
+			qtl <- c(129566595,136293051)
+		## Pedicel length
+			qtl25 <- c(14625661,20526426)
+			qtl26 <- c(164184456,172242145)
+	### get the observed counts of 'high' b scores within each QTL
+		inside_count_qtl1 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl1) & var=="1" & qtl_data$cont_midpoint < max(qtl1) | var=="1" & qtl_data$cont_midpoint==min(qtl1) | var=="1" & qtl_data$cont_midpoint==max(qtl1)) 
+		inside_count_qtl2 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl2) & var=="1" & qtl_data$cont_midpoint < max(qtl2) | var=="1" & qtl_data$cont_midpoint==min(qtl2) | var=="1" & qtl_data$cont_midpoint==max(qtl2)) 
+		inside_count_qtl3 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl3) & var=="1" & qtl_data$cont_midpoint < max(qtl3) | var=="1" & qtl_data$cont_midpoint==min(qtl3) | var=="1" & qtl_data$cont_midpoint==max(qtl3)) 
+		inside_count_qtl4 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl4) & var=="1" & qtl_data$cont_midpoint < max(qtl4) | var=="1" & qtl_data$cont_midpoint==min(qtl4) | var=="1" & qtl_data$cont_midpoint==max(qtl4)) 
+		inside_count_qtl5 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl5) & var=="1" & qtl_data$cont_midpoint < max(qtl5) | var=="1" & qtl_data$cont_midpoint==min(qtl5) | var=="1" & qtl_data$cont_midpoint==max(qtl5)) 
+		inside_count_qtl6 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl6) & var=="1" & qtl_data$cont_midpoint < max(qtl6) | var=="1" & qtl_data$cont_midpoint==min(qtl6) | var=="1" & qtl_data$cont_midpoint==max(qtl6)) 
+		inside_count_qtl7 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl7) & var=="1" & qtl_data$cont_midpoint < max(qtl7) | var=="1" & qtl_data$cont_midpoint==min(qtl7) | var=="1" & qtl_data$cont_midpoint==max(qtl7)) 
+		inside_count_qtl8 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl8) & var=="1" & qtl_data$cont_midpoint < max(qtl8) | var=="1" & qtl_data$cont_midpoint==min(qtl8) | var=="1" & qtl_data$cont_midpoint==max(qtl8)) 
+		inside_count_qtl9 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl9) & var=="1" & qtl_data$cont_midpoint < max(qtl9) | var=="1" & qtl_data$cont_midpoint==min(qtl9) | var=="1" & qtl_data$cont_midpoint==max(qtl9)) 
+		inside_count_qtl10 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl10) & var=="1" & qtl_data$cont_midpoint < max(qtl10) | var=="1" & qtl_data$cont_midpoint==min(qtl10) | var=="1" & qtl_data$cont_midpoint==max(qtl10)) 
+		inside_count_qtl11 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl11) & var=="1" & qtl_data$cont_midpoint < max(qtl11) | var=="1" & qtl_data$cont_midpoint==min(qtl11) | var=="1" & qtl_data$cont_midpoint==max(qtl11)) 
+		inside_count_qtl12 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl12) & var=="1" & qtl_data$cont_midpoint < max(qtl12) | var=="1" & qtl_data$cont_midpoint==min(qtl12) | var=="1" & qtl_data$cont_midpoint==max(qtl12)) 
+		inside_count_qtl13 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl13) & var=="1" & qtl_data$cont_midpoint < max(qtl13) | var=="1" & qtl_data$cont_midpoint==min(qtl13) | var=="1" & qtl_data$cont_midpoint==max(qtl13)) 
+		inside_count_qtl14 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl14) & var=="1" & qtl_data$cont_midpoint < max(qtl14) | var=="1" & qtl_data$cont_midpoint==min(qtl14) | var=="1" & qtl_data$cont_midpoint==max(qtl14)) 
+		inside_count_qtl15 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl15) & var=="1" & qtl_data$cont_midpoint < max(qtl15) | var=="1" & qtl_data$cont_midpoint==min(qtl15) | var=="1" & qtl_data$cont_midpoint==max(qtl15)) 
+		inside_count_qtl16 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl16) & var=="1" & qtl_data$cont_midpoint < max(qtl16) | var=="1" & qtl_data$cont_midpoint==min(qtl16) | var=="1" & qtl_data$cont_midpoint==max(qtl16)) 
+		inside_count_qtl17 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl17) & var=="1" & qtl_data$cont_midpoint < max(qtl17) | var=="1" & qtl_data$cont_midpoint==min(qtl17) | var=="1" & qtl_data$cont_midpoint==max(qtl17)) 
+		inside_count_qtl18 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl18) & var=="1" & qtl_data$cont_midpoint < max(qtl18) | var=="1" & qtl_data$cont_midpoint==min(qtl18) | var=="1" & qtl_data$cont_midpoint==max(qtl18)) 
+		inside_count_qtl19 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl19) & var=="1" & qtl_data$cont_midpoint < max(qtl19) | var=="1" & qtl_data$cont_midpoint==min(qtl19) | var=="1" & qtl_data$cont_midpoint==max(qtl19)) 
+		inside_count_qtl20 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl20) & var=="1" & qtl_data$cont_midpoint < max(qtl20) | var=="1" & qtl_data$cont_midpoint==min(qtl20) | var=="1" & qtl_data$cont_midpoint==max(qtl20)) 
+		inside_count_qtl21 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl21) & var=="1" & qtl_data$cont_midpoint < max(qtl21) | var=="1" & qtl_data$cont_midpoint==min(qtl21) | var=="1" & qtl_data$cont_midpoint==max(qtl21)) 
+		inside_count_qtl22 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl22) & var=="1" & qtl_data$cont_midpoint < max(qtl22) | var=="1" & qtl_data$cont_midpoint==min(qtl22) | var=="1" & qtl_data$cont_midpoint==max(qtl22)) 
+		inside_count_qtl23 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl23) & var=="1" & qtl_data$cont_midpoint < max(qtl23) | var=="1" & qtl_data$cont_midpoint==min(qtl23) | var=="1" & qtl_data$cont_midpoint==max(qtl23)) 
+		inside_count_qtl24 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl24) & var=="1" & qtl_data$cont_midpoint < max(qtl24) | var=="1" & qtl_data$cont_midpoint==min(qtl24) | var=="1" & qtl_data$cont_midpoint==max(qtl24))
+		inside_count_qtl25 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl25) & var=="1" & qtl_data$cont_midpoint < max(qtl25) | var=="1" & qtl_data$cont_midpoint==min(qtl25) | var=="1" & qtl_data$cont_midpoint==max(qtl25)) 
+		inside_count_qtl26 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl26) & var=="1" & qtl_data$cont_midpoint < max(qtl26) | var=="1" & qtl_data$cont_midpoint==min(qtl26) | var=="1" & qtl_data$cont_midpoint==max(qtl26)) 
+	##Sum these the counts to get the total
+		observed_counts <- inside_count_qtl1 + inside_count_qtl2 + inside_count_qtl3 + inside_count_qtl4 + inside_count_qtl5 + inside_count_qtl6 + inside_count_qtl7 + inside_count_qtl8 + inside_count_qtl9 + inside_count_qtl10 + inside_count_qtl11 + inside_count_qtl12 + inside_count_qtl13 + inside_count_qtl14 + inside_count_qtl15 + inside_count_qtl16 + inside_count_qtl17 + inside_count_qtl18 + inside_count_qtl19 + inside_count_qtl20 + inside_count_qtl21 + inside_count_qtl22 + inside_count_qtl23 + inside_count_qtl24 + inside_count_qtl25 + inside_count_qtl26
+	
+### Now for the permutations...
+	### set up a variable to catch the permuted values
+		perm_counts <- c()
+		### loop_start
+		for(i in 1:n){
+		randomized_positions <- sample(qtl_data$cont_midpoint) ## make a vector of randomised IDs
+			qtl_data$cont_midpoint <- randomized_positions ## replace the IDs with the randomised IDs		
+	### get all the counts	
+		inside_count_qtl1 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl1) & var=="1" & qtl_data$cont_midpoint < max(qtl1) | var=="1" & qtl_data$cont_midpoint==min(qtl1) | var=="1" & qtl_data$cont_midpoint==max(qtl1)) 
+		inside_count_qtl2 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl2) & var=="1" & qtl_data$cont_midpoint < max(qtl2) | var=="1" & qtl_data$cont_midpoint==min(qtl2) | var=="1" & qtl_data$cont_midpoint==max(qtl2)) 
+		inside_count_qtl3 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl3) & var=="1" & qtl_data$cont_midpoint < max(qtl3) | var=="1" & qtl_data$cont_midpoint==min(qtl3) | var=="1" & qtl_data$cont_midpoint==max(qtl3)) 
+		inside_count_qtl4 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl4) & var=="1" & qtl_data$cont_midpoint < max(qtl4) | var=="1" & qtl_data$cont_midpoint==min(qtl4) | var=="1" & qtl_data$cont_midpoint==max(qtl4)) 
+		inside_count_qtl5 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl5) & var=="1" & qtl_data$cont_midpoint < max(qtl5) | var=="1" & qtl_data$cont_midpoint==min(qtl5) | var=="1" & qtl_data$cont_midpoint==max(qtl5)) 
+		inside_count_qtl6 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl6) & var=="1" & qtl_data$cont_midpoint < max(qtl6) | var=="1" & qtl_data$cont_midpoint==min(qtl6) | var=="1" & qtl_data$cont_midpoint==max(qtl6)) 
+		inside_count_qtl7 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl7) & var=="1" & qtl_data$cont_midpoint < max(qtl7) | var=="1" & qtl_data$cont_midpoint==min(qtl7) | var=="1" & qtl_data$cont_midpoint==max(qtl7)) 
+		inside_count_qtl8 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl8) & var=="1" & qtl_data$cont_midpoint < max(qtl8) | var=="1" & qtl_data$cont_midpoint==min(qtl8) | var=="1" & qtl_data$cont_midpoint==max(qtl8)) 
+		inside_count_qtl9 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl9) & var=="1" & qtl_data$cont_midpoint < max(qtl9) | var=="1" & qtl_data$cont_midpoint==min(qtl9) | var=="1" & qtl_data$cont_midpoint==max(qtl9)) 
+		inside_count_qtl10 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl10) & var=="1" & qtl_data$cont_midpoint < max(qtl10) | var=="1" & qtl_data$cont_midpoint==min(qtl10) | var=="1" & qtl_data$cont_midpoint==max(qtl10)) 
+		inside_count_qtl11 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl11) & var=="1" & qtl_data$cont_midpoint < max(qtl11) | var=="1" & qtl_data$cont_midpoint==min(qtl11) | var=="1" & qtl_data$cont_midpoint==max(qtl11)) 
+		inside_count_qtl12 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl12) & var=="1" & qtl_data$cont_midpoint < max(qtl12) | var=="1" & qtl_data$cont_midpoint==min(qtl12) | var=="1" & qtl_data$cont_midpoint==max(qtl12)) 
+		inside_count_qtl13 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl13) & var=="1" & qtl_data$cont_midpoint < max(qtl13) | var=="1" & qtl_data$cont_midpoint==min(qtl13) | var=="1" & qtl_data$cont_midpoint==max(qtl13)) 
+		inside_count_qtl14 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl14) & var=="1" & qtl_data$cont_midpoint < max(qtl14) | var=="1" & qtl_data$cont_midpoint==min(qtl14) | var=="1" & qtl_data$cont_midpoint==max(qtl14)) 
+		inside_count_qtl15 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl15) & var=="1" & qtl_data$cont_midpoint < max(qtl15) | var=="1" & qtl_data$cont_midpoint==min(qtl15) | var=="1" & qtl_data$cont_midpoint==max(qtl15)) 
+		inside_count_qtl16 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl16) & var=="1" & qtl_data$cont_midpoint < max(qtl16) | var=="1" & qtl_data$cont_midpoint==min(qtl16) | var=="1" & qtl_data$cont_midpoint==max(qtl16)) 
+		inside_count_qtl17 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl17) & var=="1" & qtl_data$cont_midpoint < max(qtl17) | var=="1" & qtl_data$cont_midpoint==min(qtl17) | var=="1" & qtl_data$cont_midpoint==max(qtl17)) 
+		inside_count_qtl18 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl18) & var=="1" & qtl_data$cont_midpoint < max(qtl18) | var=="1" & qtl_data$cont_midpoint==min(qtl18) | var=="1" & qtl_data$cont_midpoint==max(qtl18)) 
+		inside_count_qtl19 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl19) & var=="1" & qtl_data$cont_midpoint < max(qtl19) | var=="1" & qtl_data$cont_midpoint==min(qtl19) | var=="1" & qtl_data$cont_midpoint==max(qtl19)) 
+		inside_count_qtl20 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl20) & var=="1" & qtl_data$cont_midpoint < max(qtl20) | var=="1" & qtl_data$cont_midpoint==min(qtl20) | var=="1" & qtl_data$cont_midpoint==max(qtl20)) 
+		inside_count_qtl21 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl21) & var=="1" & qtl_data$cont_midpoint < max(qtl21) | var=="1" & qtl_data$cont_midpoint==min(qtl21) | var=="1" & qtl_data$cont_midpoint==max(qtl21)) 
+		inside_count_qtl22 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl22) & var=="1" & qtl_data$cont_midpoint < max(qtl22) | var=="1" & qtl_data$cont_midpoint==min(qtl22) | var=="1" & qtl_data$cont_midpoint==max(qtl22)) 
+		inside_count_qtl23 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl23) & var=="1" & qtl_data$cont_midpoint < max(qtl23) | var=="1" & qtl_data$cont_midpoint==min(qtl23) | var=="1" & qtl_data$cont_midpoint==max(qtl23)) 
+		inside_count_qtl24 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl24) & var=="1" & qtl_data$cont_midpoint < max(qtl24) | var=="1" & qtl_data$cont_midpoint==min(qtl24) | var=="1" & qtl_data$cont_midpoint==max(qtl24))
+		inside_count_qtl25 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl25) & var=="1" & qtl_data$cont_midpoint < max(qtl25) | var=="1" & qtl_data$cont_midpoint==min(qtl25) | var=="1" & qtl_data$cont_midpoint==max(qtl25)) 
+		inside_count_qtl26 <- sum(var=="1" & qtl_data$cont_midpoint > min(qtl26) & var=="1" & qtl_data$cont_midpoint < max(qtl26) | var=="1" & qtl_data$cont_midpoint==min(qtl26) | var=="1" & qtl_data$cont_midpoint==max(qtl26)) 
+
+	##Sum these over counts to get the total
+		temp_total_observed_inside <- inside_count_qtl1 + inside_count_qtl2 + inside_count_qtl3 + inside_count_qtl4 + inside_count_qtl5 + inside_count_qtl6 + inside_count_qtl7 + inside_count_qtl8 + inside_count_qtl9 + inside_count_qtl10 + inside_count_qtl11 + inside_count_qtl12 + inside_count_qtl13 + inside_count_qtl14 + inside_count_qtl15 + inside_count_qtl16 + inside_count_qtl17 + inside_count_qtl18 + inside_count_qtl19 + inside_count_qtl20 + inside_count_qtl21 + inside_count_qtl22 + inside_count_qtl23 + inside_count_qtl24 + inside_count_qtl25 + inside_count_qtl26
+		### add the temp counts to the empty dataframe
+			 perm_counts[i] <- temp_total_observed_inside
+			 }
+### Calculate p_value
+	perm_counts_numeric <-  as.numeric(perm_counts)
+	p_value <- ((sum(perm_counts_numeric >  observed_counts | perm_counts_numeric==observed_counts)+1)/(n+1))
+
+p_value

@@ -1,0 +1,139 @@
+
+
+
+################################################ plot lg clines and the mean (Fig. 3b) ################################################
+
+par(pin=c(3.4,1.9))
+
+hzdata = read.csv("lg_clines.csv", header=TRUE)
+
+rbPal <-  colorRampPalette(c("deepskyblue", "firebrick1", "gold1", "darkturquoise", "mediumorchid1", "seagreen3", "slateblue1", "gray69", "darkgreen", "orange"))
+
+Col <- rbPal(10)[as.numeric(cut(hzdata$lg,breaks = 10))]
+
+hzf <- function(x, muL,muR,width,center) (muL+(0.5*(muR-muL))*(1+tanh(2*(x-center)/width)))
+
+for(i in 1:nrow(hzdata)) 
+    with(hzdata[i,],
+       curve(hzf(x,muL,muR,width,center), xlim=c(-30000,50000), ylim=c(0,1), 
+       lwd=0.5, lty=1, col=Col[i], add=i!=1))
+
+par(new=T)
+
+## redefine parameter values for custom cline
+ w = 7600
+ c = 379
+ pl = 1
+ pr = 0.05
+ # plot the cline
+curve((pl+(0.5*(pr-pl))*(1+tanh(2*(x-c)/w))),xlim=c(-30000,50000),ylim=c(0,1),lty=2,lwd=1.5,col="black", add=T)
+
+
+
+################################### Plot of all cline function coloured by the Cs score (Fig. 3c) ###################################
+
+par(pin=c(3.4,1.9))
+
+hzdata = read.csv("100_win_corrected_clines.csv", header=TRUE)
+rbPal <-  colorRampPalette(c("blue", "red"))
+
+Col <- rbPal(10)[as.numeric(cut(hzdata$b0.5,breaks = 10))]
+
+}
+hzf <- function(x, muL,muR,width,center) (muL+(0.5*(muR-muL))*(1+tanh(2*(x-center)/width)))
+
+for(i in 1:nrow(hzdata)) {
+    with(hzdata[i,],
+       curve(hzf(x,muL,muR,width,center), xlim=c(-30000,50000), ylim=c(0,1), 
+       lwd=0.25,col=Col[i], add=i!=1)
+    )
+}
+
+
+
+################################# Cs score across across genome (Fig. 4a)###################################
+
+hzdata = read.csv("100_win_corrected_clines.csv", header=TRUE)
+
+plot(0, cex=0.2, xaxt="n", type="n", xlab="Chromosome", cex.axis=1, ylab="Cline shape", pch=20, col="white", xlim=c(0,195292004), ylim=c(0,0.35))
+
+
+l<- "grey77" #Dark box color
+d<- "gray91" #Light box color
+
+rect(0,0,20551962,0.35, border=l, col=l)#chr 1
+rect(20551962,0,44898679,0.35, border=d, col=d)#chr 2
+rect(44898679,0,65697659,0.35, border=l, col=l) #chr 3
+rect(65697659,0,84254724,0.35, border=d, col=d) #chr 3
+rect(84254724,0,109811995,0.35,border=l, col=l) #chr 5
+rect(109811995,0,125577604,0.35,border=d, col=d) #chr 5
+rect(125577604,0,143108577,0.35,border=l, col=l) #chr 7
+rect(143108577,0,163376010,0.35,border=d, col=d) #chr 7
+rect(163376010,0,177886056,0.35,border=l, col=l) #chr 9
+rect(177886056,0,195292004,0.35,border=d, col=d) #chr 9
+
+axis(side=1,at=c(11400000, 33900000, 55000000, 75000000, 97000000, 117000000, 135000000, 153000000, 171000000, 187000000),labels=c("1","2","3","4","5","6","7","8","9","10"))
+
+rbPal <-  colorRampPalette(c("blue", "red"))
+
+Col <- rbPal(10)[as.numeric(cut(hzdata$b0.5e,breaks = 10))]
+
+points(hzdata$b0.5e~hzdata$bp_continuous, cex=0.1, pch=20,  col=Col)
+
+###### add the average clines
+par(new=T)
+
+## whole genome admixture
+ 
+ ## redefine parameter values for custom cline
+ 	
+ w = 7600
+ c = 379
+ pl = 1
+ pr = 0.05
+ 
+ # plot the cline
+ 
+curve((pl+(0.5*(pr-pl))*(1+tanh(2*(x-c)/w))),xlim=c(-30000,50000),ylim=c(0,1),lty=2,lwd=1,col="black", add=T)
+
+#### again
+
+###### add custom clines
+
+par(new=T)
+
+## add average
+ 
+ 	## redefine parameter values for custom cline
+ 	
+ w = 49911.77
+ c = 310
+ pl = 0.70
+ pr = 0.34
+ 
+ # plot the cline
+ 
+curve((pl+(0.5*(pr-pl))*(1+tanh(2*(x-c)/w))),xlim=c(-30000,50000),ylim=c(0,1),lty=2,lwd=2,col="orange", add=T)
+
+
+######################################## plots in the suplement ##################################
+
+##### w on delta q colored by deltaq/(w+t)
+
+hzdata = read.csv("100_win_corrected_clines.csv", header=TRUE)
+
+rbPal <-  colorRampPalette(c("blue", "red"))
+
+Col <- rbPal(10)[as.numeric(cut(hzdata$shape0.25,breaks = 10))]
+
+plot(hzdata$delta_Q,hzdata$w_km, pch=20, cex=1,  col=Col, xlim=c(0,1), ylim=c(0,80))
+
+#### legend
+
+hzdata = read.csv("clines_only.csv", header=TRUE)
+
+rbPal <-  colorRampPalette(c("blue", "red"))
+
+Col <- rbPal(10)[as.numeric(cut(hzdata$legend,breaks = 10))]
+
+plot(hzdata$cline_yn,hzdata$legend, pch=15, cex=3,  col=Col)
