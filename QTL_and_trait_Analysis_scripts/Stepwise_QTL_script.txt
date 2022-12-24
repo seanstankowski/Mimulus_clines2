@@ -1,0 +1,33 @@
+library(qtl)
+
+#Read file (ALL PHASED DATA - reduced 1 snp / cM)
+stepw <-read.cross("csv", file="c:/Users/Hanna/Documents/Mimulus Work/QTL Data/All phased data/QTL_1marker_per_cmpos.csv")
+
+#Specify phenotype column
+p<- 14
+
+#Add penalties from Sean
+pen <- c(3.58937143422674, 6.77664672228532, 5.67484206704093) 
+pen
+
+#Stepwise selection model
+stepw <- calc.genoprob(stepw, step=0)
+step <-stepwiseqtl(stepw, chr=c(4), pheno.col=p, penalties=pen , max.qtl=3 ,method="hk", incl.markers=TRUE, refine.locations=TRUE, additive.only=FALSE, scan.pairs=TRUE, keeplodprofile=TRUE, verbose=TRUE, tol=1e-4, maxit=1000, require.fullrank=FALSE)
+
+#Save summary of QTL positions
+summ <-summary(step)
+write.table(summ, file="anthocyanin_QTL_summary.txt")
+
+#Save LOD Profiles for 5 QTL
+lprof <- attr(step, "lodprofile") 
+lprof1 <- lprof[[1]]
+lprof2 <- lprof[[2]]
+lprof3 <- lprof[[3]]
+lprof4 <- lprof[[4]]
+lprof5 <- lprof[[5]]
+write.table(lprof1, file="anthocyanin_lod_scores_1.txt")
+write.table(lprof2, file="anthocyanin_lod_scores_2.txt")
+write.table(lprof3, file="anthocyanin_lod_scores_3.txt")
+write.table(lprof4, file="anthocyanin_lod_scores_4.txt")
+write.table(lprof5, file="anthocyanin_lod_scores_5.txt")
+
